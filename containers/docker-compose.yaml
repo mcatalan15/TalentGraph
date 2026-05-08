@@ -1,0 +1,58 @@
+networks:
+  default:
+    name: tg_network
+
+services:
+
+  client:
+    container_name: tg_client
+    build: ./client
+    depends_on:
+      - api
+    expose:
+      - "8080"
+    environment:
+      - NODE_ENV=production
+      - TLS_PORT=${HOST_PORT}
+
+  api:
+    container_name: tg_api
+    build: ./api
+    depends_on:
+      - postgresql
+    expose:
+      - "3000"
+    environment:
+      - ADDRESS=0.0.0.0
+      - PORT=3000
+
+  postgresql:
+    container_name: tg_postgresql
+    build: ./postgresql
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER=talentgraph
+      - POSTGRES_PASSWORD=talentgraph
+      - POSTGRES_DB=talentgraph
+
+  caddy:
+    container_name: tg_caddy
+    image: caddy:latest
+    ports:
+      - "${HOST_PORT}:80"
+      - "${HOST_PORT_SSL}:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - client
+      - api
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
