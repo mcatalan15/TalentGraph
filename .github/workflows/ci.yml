@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app:
+          - api
+          - client
+          # - postgresql
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: containers/${{ matrix.app }}
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: containers/${{ matrix.app }}
+        run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: containers/${{ matrix.app }}
+        run: npm ci
+
+      - name: Run build
+        working-directory: containers/${{ matrix.app }}
+        run: npm run build
+
+  smart_contracts:
+    name: Smart Contracts
+    runs-on: ubuntu-latest
+    needs: [lint, build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: containers/${{ matrix.app }}
+        run: npm ci
+
+      - name: Test smart contracts
+        working-directory: containers/${{ matrix.app }}
+        run: npm run test:contracts
