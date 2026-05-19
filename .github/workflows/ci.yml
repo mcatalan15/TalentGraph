@@ -10,6 +10,7 @@ jobs:
     name: Lint (${{ matrix.app }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # do not stop if one test fails
       matrix:
         app:
           - api
@@ -24,6 +25,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: containers/${{ matrix.app }}/package-lock.json
 
       - name: Install dependencies
         working-directory: containers/${{ matrix.app }}
@@ -45,7 +48,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+          cache: 'npm'
+          cache-dependency-path: containers/${{ matrix.app }}/package-lock.json
       - name: Install dependencies
         working-directory: containers/${{ matrix.app }}
         run: npm ci
@@ -66,6 +70,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: containers/${{ matrix.app }}/package-lock.json
 
       - name: Install dependencies
         working-directory: containers/${{ matrix.app }}
