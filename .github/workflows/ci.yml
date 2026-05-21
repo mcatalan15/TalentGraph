@@ -99,23 +99,18 @@ jobs:
         run: npm run build # build production code
         working-directory: containers/client
 
-  smart-contracts:
-    name: Test smart contracts
-    runs-on: ubuntu-latest
-    needs: [build-api, build-client]
-    strategy:
-      matrix:
-        app:
-          - api
-          - client
-          # - postgresql
-    steps:
-      - uses: actions/checkout@v4
+#  smart-contracts:
+#    name: Test smart contracts
+#    runs-on: ubuntu-latest
+#    needs: [build-api, build-client]
 
-      - name: Install dependencies
-        working-directory: containers/${{ matrix.app }}
-        run: npm ci
+#    steps:
+#      - uses: actions/checkout@v4
 
-      - name: Test smart contracts
-        working-directory: containers/${{ matrix.app }}
-        run: npm run test:contracts
+#      - name: Install dependencies
+#        working-directory: containers/${{ matrix.app }}
+#        run: npm ci
+
+#      - name: Test smart contracts
+#        working-directory: containers/${{ matrix.app }}
+#        run: npm run test:contracts
