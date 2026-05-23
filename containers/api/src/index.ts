@@ -1,7 +1,11 @@
 import Fastify from 'fastify'
 
 const fastify = Fastify({
-  logger: true
+  logger: {
+    transport: {
+      target: 'pino-pretty'  // npm install --save-dev pino-pretty
+    }
+  }
 })
 
 fastify.get('/api/health', async () => {
