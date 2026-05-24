@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 
 const fastify = Fastify({
-  logger: process.env.ENV === 'development' ? {
+  logger: process.env.NODE_ENV === 'development' ? {
     transport: {
       target: 'pino-pretty'  // npm install --save-dev pino-pretty
     }
