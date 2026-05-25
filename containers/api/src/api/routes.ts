@@ -28,7 +28,7 @@ async function registerRoutes(fastify: ReturnType<typeof Fastify>) {
             return res.rows
         } catch (err) {
             fastify.log.error(err)
-            throw new Error('Failed to fetch students')
+            throw new Error('Failed to fetch students', { cause: err })
         }
     })
 }
