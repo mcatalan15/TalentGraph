@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: containers/${{ matrix.app }}
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         working-directory: containers/${{ matrix.app }}
@@ -53,7 +53,7 @@ jobs:
 
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: containers/api
 
       - name: Start server and check health
@@ -92,7 +92,7 @@ jobs:
           cache-dependency-path: containers/client/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: containers/client
 
       - name: Build
