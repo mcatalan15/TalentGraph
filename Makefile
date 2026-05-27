@@ -20,6 +20,16 @@ school:
 	@printf "##########################################################\n"
 	@printf "\033[0m"
 
+dev:
+	- HOST_PORT=8080 HOST_PORT_SSL=8443 docker compose -f ./containers/docker-compose-dev.yaml up -d
+	@printf "\n"
+	@printf "\033[1;32m"
+	@printf "##########################################################\n"
+	@printf "##  You can access the application at:			##\n"
+	@printf "##  https://talentgraph.localhost:8443			##\n"
+	@printf "##########################################################\n"
+	@printf "\033[0m"
+
 down:
 	-docker compose -f ./containers/docker-compose.yaml down
 

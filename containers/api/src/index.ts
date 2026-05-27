@@ -1,7 +1,16 @@
 import Fastify from 'fastify'
 
 const fastify = Fastify({
-  logger: true
+  logger: process.env.NODE_ENV === 'development' ? {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss',
+        ignore: 'pid,hostname'
+      }
+    }
+  } : true
 })
 
 fastify.get('/api/health', async () => {
