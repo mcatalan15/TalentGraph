@@ -11,7 +11,7 @@ const isLoading = ref<boolean>(false) // True false for tracking if a user sign 
 // PopUp Listener
 const handleAuthMessage = (event: MessageEvent) => {
   // Checks when a browser window receives a message from the popup window
-  if (event.origin !== "https://talentgraph.localhost:8443") return // !!! Check the port MUST BE ANOTHER
+  if (event.origin !== "https://talentgraph.localhost:8443") return // !!! Check the port MUST BE OTHER
 
   // Checks the domain origin is the sender (security)
   if (event.data.status === 'success') {
