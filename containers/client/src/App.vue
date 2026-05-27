@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { createWalletClient, custom } from 'viem' \\ Lib for EVM (ethers.js replacement)
-import { mainnet } from 'viem/chains' \\ called ETH mainnet (check to use Polygon Testnet!)
+import { createWalletClient, custom } from 'viem' 
+import { mainnet } from 'viem/chains'
 
 // Data Store
 const step = ref<1 | 2>(1) // reactive data to filter the status 1 (Wallet connection) or 2 (42auth)
