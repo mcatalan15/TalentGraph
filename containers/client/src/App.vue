@@ -32,8 +32,11 @@ onUnmounted(() => {
 
 // 1: Sign-In with Wallet (Ethereum) (SIWE)
 const handleSiweAuth = async () => {
+  // 1. Cast the window to any to bypass initial check safely
+  const provider = (window as any).ethereum
+
   // Check if a wallet is installed in the browser
-  if (!window.ethereum) {
+  if (!provider) {
     alert('Wallet (Metamask, Phantom Coinbase Wallet...) not found.')
     return
   }
@@ -45,7 +48,7 @@ const handleSiweAuth = async () => {
   try {
       const walletClient = createWalletClient({
           chain: mainnet,
-          transport: custom(window.ethereum)
+          transport: custom(provider)
         })
         
     // Asks the user permision to connect their wallet to the site
