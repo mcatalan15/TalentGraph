@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import { Pool } from 'pg'
+import oauthPlugin from '@fastify/oauth2'
 
 async function registerRoutes(fastify: ReturnType<typeof Fastify>) {
 
