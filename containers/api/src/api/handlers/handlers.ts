@@ -7,10 +7,11 @@ export async function healthCheck() {
 }
 
 export async function getStudents(request: any, reply: any) {
+
     try {
 
         const res = await request.server.pool.query('SELECT id, name, login, email FROM students')
-        return res.rows
+        return reply.send(res.rows)
 
     } catch (err) {
 
@@ -34,7 +35,7 @@ export async function getUserData(request: any, reply: any) {
             return reply.status(401).send({ error: 'Unauthorized' })
         }
         const userData = await res.json()
-        return userData
+        return reply.send(userData)
 
     } catch (err) {
         request.log.error('Error fetching user data from 42 API', err)
@@ -175,7 +176,7 @@ export async function getStudentsFrom42(request: any, reply: any) {
 
     try {
 
-        let students: any[] = []
+        const students: any[] = []
         let page = 0
 
         while (true) {
@@ -198,7 +199,7 @@ export async function getStudentsFrom42(request: any, reply: any) {
 
         console.log(`Fetched ${students.length} students from 42 API`)
 
-        return students
+        return reply.send(students)
 
     } catch (err) {
         request.log.error('Error fetching students from 42 API?', err)
