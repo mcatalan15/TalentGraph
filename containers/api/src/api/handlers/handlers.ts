@@ -11,7 +11,7 @@ export async function getStudents(request: any, reply: any) {
 
     try {
 
-        const res = await request.server.pool.query('SELECT id, name, login, email FROM students')
+        const res = await request.server.pool.query('SELECT * FROM students')
         return reply.send(res.rows)
 
     } catch (err) {
@@ -98,8 +98,14 @@ export async function handleOAuthCallback(request: any, reply: any) {
         }
 
         const userData = await data.json()
-        console.log('Fetched user data from 42 API using access token: ', userData)
 
+        const resFromDb = await checkAndInsertStudent(request, userData)
+        if (resFromDb) {
+            request.log.info('Checked/inserted student in database successfully')
+        } else {
+            request.log.error('Failed to check/insert student in database')
+        }
+        
         request.session.userToken = userToken
 
         const login = userData.login
@@ -174,8 +180,9 @@ export async function handleOAuthCallback(request: any, reply: any) {
 
 /* 
   This endpoint fetches all students from Barcelona campus via the 42 API.
-  It requires a valid access token obtained through the 42 OAuth2 flow,
-  which is handled in the getTokenFrom42OAuth function.
+  This is used for testing purposes to verify that we can successfully authenticate
+  and fetch data, and to have a way to manually trigger fetching all students if needed.
+  The
 */
 export async function getStudentsFrom42(request: any, reply: any) {
 

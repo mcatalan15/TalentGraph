@@ -4,15 +4,15 @@ CREATE TABLE IF NOT EXISTS students (
     login VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    usual_full_name VARCHAR(255) NOT NULL,
-    usual_first_name VARCHAR(255) NOT NULL,
+    usual_full_name VARCHAR(255),
+    usual_first_name VARCHAR(255),
     url VARCHAR(255) NOT NULL,
     phone VARCHAR(255),
     displayname VARCHAR(255) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     active BOOLEAN NOT NULL,
-    is_staff BOOLEAN NOT NULL,
-    is_alumni BOOLEAN NOT NULL,
+    staff BOOLEAN NOT NULL,
+    alumni BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

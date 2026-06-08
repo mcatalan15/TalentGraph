@@ -1,4 +1,3 @@
-import { pool } from 'pg'
 
 export async function checkAndInsertStudent(request: any, userData: any): Promise<boolean> {
 
@@ -11,7 +10,7 @@ export async function checkAndInsertStudent(request: any, userData: any): Promis
 
     try {
 
-        const { id, login, email, displayname } = userData
+        const { id } = userData
         
         // check if student already exists
         const res = await pool.query('SELECT id FROM students WHERE id = $1', [id])
@@ -27,24 +26,23 @@ export async function checkAndInsertStudent(request: any, userData: any): Promis
                 first_name: userData.first_name,
                 last_name: userData.last_name,
                 usual_full_name: userData.usual_full_name,
+                usual_first_name: userData.usual_first_name,
                 phone: userData.phone === 'hidden' ? null : userData.phone,
                 url: userData.url,
-                image_url: userData.image_url,
-                staff: userData.staff,
-                active: userData.active,
-                alumni: userData.alumni,
+                image_url: userData.image.link,
+                staff: userData['staff?'] ?? false,
+                active: userData['active?'] ?? false,
+                alumni: userData['alumni?'] ?? false,
             }
 
             const res = await pool.query(
-                'INSERT INTO students (id, displayname, login, email, first_name, last_name, usual_full_name, phone, url, image_url, staff, active, alumni) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-                [newUser.id, newUser.displayname, newUser.login, newUser.email, newUser.first_name, newUser.last_name, newUser.usual_full_name, newUser.phone, newUser.url, newUser.image_url, newUser.staff, newUser.active, newUser.alumni]
+                'INSERT INTO students (id, displayname, login, email, first_name, last_name, usual_full_name, usual_first_name, phone, url, image_url, staff, active, alumni) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
+                [newUser.id, newUser.displayname, newUser.login, newUser.email, newUser.first_name, newUser.last_name, newUser.usual_full_name, newUser.usual_first_name, newUser.phone, newUser.url, newUser.image_url, newUser.staff, newUser.active, newUser.alumni]
             )
 
-            if (res.ok) {
-                request.log.info(`Inserted student with id ${id} into database successfully`)
+            if (res) {
                 return true
             } else {
-                request.log.error(`Failed to insert student with id ${id} into database`)
                 return false
             }
 
