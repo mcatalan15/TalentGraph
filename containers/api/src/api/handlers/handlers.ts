@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 
 import { getUserTokenFrom42OAuth } from '../oauth42/token'
+import { checkAndInsertStudent } from '../db/queries'
 
 export async function healthCheck() {
     return { status: 'ok' }
@@ -35,6 +36,20 @@ export async function getUserData(request: any, reply: any) {
             return reply.status(401).send({ error: 'Unauthorized' })
         }
         const userData = await res.json()
+
+        if (!userData) {
+            request.log.error('No user data found in 42 API response')
+            return reply.status(404).send({ error: 'User data not found in 42 API response' })
+        }
+
+        const resFromDb = await checkAndInsertStudent(request, userData)
+
+        if (resFromDb) {
+            request.log.info('Checked/inserted student in database successfully')
+        } else {
+            request.log.error('Failed to check/insert student in database')
+        }
+
         return reply.send(userData)
 
     } catch (err) {
