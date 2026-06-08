@@ -124,7 +124,7 @@ const handle42OAuth = () => {
 }
 
 const fetchUserData = async () => {
-  const token = localCookie.getItem('42_access_token')
+  const token = localStorage.getItem('42_access_token')
   if (!token) {
     userError.value = 'No access token available'
     return
