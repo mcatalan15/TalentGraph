@@ -7,8 +7,12 @@ services:
   client:
     container_name: tg_client
     build: ./client
+    command: npm run dev
     depends_on:
       - api
+    volumes:
+      - ./client:/app
+      - /app/node_modules
     expose:
       - "8080"
     environment:

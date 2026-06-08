@@ -1,37 +1,18 @@
 import Fastify from 'fastify'
-import { Pool } from 'pg'
-import oauthPlugin from '@fastify/oauth2'
 
-async function registerRoutes(fastify: ReturnType<typeof Fastify>) {
+import { healthCheck, 
+    getStudents, 
+    getUserData, 
+    handleOAuthCallback,
+    getStudentsFrom42
+ } from './handlers/handlers'
 
-    const pool = new Pool({
-    host: process.env.POSTGRES_HOST || 'postgresql',
-    port: process.env.POSTGRES_PORT || 5432,
-    database: process.env.POSTGRES_DATABASE || 'talentgraph',
-    user: process.env.POSTGRES_USER || 'talentgraph',
-    password: process.env.POSTGRES_PASSWORD || 'talentgraph'
-    });
+export async function registerRoutes(fastify: ReturnType<typeof Fastify>) {
 
-    fastify.get('/api/health', async () => {
-        return { status: 'ok' }
-    })
+    fastify.get('/api/health', healthCheck)
+    fastify.get('/api/students', getStudents)
+    fastify.get('/api/me', getUserData)
+    fastify.get('/api/auth/callback', handleOAuthCallback)
+    fastify.get('/api/get-students', getStudentsFrom42)
 
-    fastify.get('/api', async () => {
-        return {
-            name: 'talentgraph-api',
-            message: 'Fastify TypeScript API is running'
-        }
-    })
-
-    fastify.get('/api/students', async () => {
-        try {
-            const res = await pool.query('SELECT id, name, login, email FROM students')
-            return res.rows
-        } catch (err) {
-            fastify.log.error(err)
-            throw new Error('Failed to fetch students', { cause: err })
-        }
-    })
 }
-
-export { registerRoutes }
