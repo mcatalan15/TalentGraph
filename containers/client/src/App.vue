@@ -4,9 +4,12 @@ import { createWalletClient, custom } from 'viem'
 import { mainnet } from 'viem/chains'
 
 // Data Store
-const step = ref<1 | 2>(1) // reactive data to filter the status 1 (Wallet connection) or 2 (42auth)
+const step = ref<1 | 2 | 3>(1) // reactive data to filter the status 1 (Wallet connection) or 2 (42auth) or 3 (Complete)
 const walletAddress = ref<string | null>(null) // Store Eth wallet address
 const isLoading = ref<boolean>(false) // True false for tracking if a user sign in Metamask is happening.
+const userData = ref<Record<string, any> | null>(null)
+const userError = ref<string | null>(null)
+const isUserLoading = ref<boolean>(false)
 
 // PopUp Listener
 const handleAuthMessage = (event: MessageEvent) => {
@@ -15,8 +18,10 @@ const handleAuthMessage = (event: MessageEvent) => {
 
   // Checks the domain origin is the sender (security)
   if (event.data.status === 'success') {
-    alert('Autenticación completa. Usuario creado/logueado en Postgres.')
-    // Here happens when the user has all setup
+    if (event.data.token) {
+      localStorage.setItem('42_access_token', event.data.token)
+    }
+    const data = fetchUserData()
   }
 }
 
@@ -83,10 +88,12 @@ const handleSiweAuth = async () => {
 
 // 2: Open 42 OAuth as an independent PopUp to protect SPA
 const handle42OAuth = () => {
-  const INTRA_CLIENT_ID = "TU_CLIENT_ID" // Public Identifier for the app inside 42 Network
+  const INTRA_CLIENT_ID = "u-s4t2ud-3516e92e1176dd60546a7043df717d1ab94ea4b196ffa2b4c830b3494b4a1c1f" // Public Identifier for the app inside 42 Network
   // The backend process the code of the API and execute a script that sends the postMessage to this SPA
   const REDIRECT_URI = encodeURIComponent("https://talentgraph.localhost:8443/api/auth/callback") // Endpoint
   const INTRA_URL = `https://api.intra.42.fr/oauth/authorize?client_id=${INTRA_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=public` // Final authorization URL following OAuth2 protocol
+
+  isLoading.value = true
 
   // Linked wallet saved in localStorage to agroup info and send to backend once completed
   if (walletAddress.value) {
@@ -98,12 +105,57 @@ const handle42OAuth = () => {
   const left = (window.innerWidth / 2) - (width / 2)
   const top = (window.innerHeight / 2) - (height / 2)
   
-  window.open(
-    INTRA_URL, 
-    "42 Auth", 
-    `width=${width},height=${height},top=${top},left=${left}`
-  )
+  try {
+
+    window.open(
+      INTRA_URL, 
+      "42 Auth", 
+      `width=${width},height=${height},top=${top},left=${left}`
+    )
+
+  } catch (error) {
+    console.error('Error opening 42 OAuth popup:', error)
+    alert('Failed to open 42 authentication window. Please try again.')
+    isLoading.value = false
+    return
+  } finally {
+    isLoading.value = false
+  }
 }
+
+const fetchUserData = async () => {
+  const token = localStorage.getItem('42_access_token')
+  if (!token) {
+    userError.value = 'No access token available'
+    return
+  }
+
+  isUserLoading.value = true
+  userError.value = null
+
+  try {
+    const response = await fetch('/api/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user data, status: ${response.status}`)
+    } else {
+
+      userData.value = await response.json()
+      step.value = 3
+
+    }
+
+  } catch (error) {
+    console.error('Error fetching user data:', error)
+    userError.value = error instanceof Error ? error.message : 'Failed to fetch user data'
+  } finally {
+    isUserLoading.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -121,7 +173,7 @@ const handle42OAuth = () => {
     </section>
 
     <!-- 2: 42 OAuth -->
-    <section v-else class="auth-box animate-fade">
+    <section v-else-if="step === 2" class="auth-box animate-fade">
       <p class="eyebrow">TalentGraph / Step 2</p>
       <h1>Link Academic ID</h1>
       <div class="wallet-display">
@@ -133,6 +185,20 @@ const handle42OAuth = () => {
       <button @click="handle42OAuth" class="black-button">
         Verify Identity
       </button>
+    </section>
+
+    <!-- 3: Landing Page -->
+    <section v-else-if="step === 3" class="auth-box animate-fade">
+      <p class="eyebrow">TalentGraph / Step 3</p>
+      <h1>Welcome </h1>
+      <p class="body-text">You are now logged in as a 42 Student.</p>
+      <p v-if="isUserLoading" class="body-text">Loading profile...</p>
+      <p v-else-if="userError" class="body-text">{{ userError }}</p>
+      <div v-else-if="userData" class="wallet-display">
+        <div>{{ userData.login ?? userData.email ?? 'Unknown user' }}</div>
+        <div v-if="userData.displayname">{{ userData.displayname }}</div>
+        <div v-if="userData.campus?.[0]?.name">{{ userData.campus[0].name }}</div>
+      </div>
     </section>
   </main>
 </template>

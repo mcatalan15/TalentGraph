@@ -1,28 +1,6 @@
-import Fastify from 'fastify'
+import { buildFastifyInstance } from './server/build'
 
-const fastify = Fastify({
-  logger: process.env.NODE_ENV === 'development' ? {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname'
-      }
-    }
-  } : true
-})
-
-fastify.get('/api/health', async () => {
-  return { status: 'ok' }
-})
-
-fastify.get('/api', async () => {
-  return {
-    name: 'talentgraph-api',
-    message: 'Fastify TypeScript API is running'
-  }
-})
+const fastify = await buildFastifyInstance()
 
 async function start() {
   const port = Number(process.env.PORT ?? 3000)
