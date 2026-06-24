@@ -3,8 +3,6 @@ import HomeView from './../views/HomeView.vue'
 import StudentLogin from './../views/StudentLogin.vue'
 import StudentView from './../views/StudentView.vue'
 import SherpaView from './../views/SherpaView.vue'
-import StudentView from './../views/StudentView.vue'
-import SherpaView from './../views/SherpaView.vue'
 import RecruiterLogin from './../views/RecruiterLogin.vue'
 import RecruiterView from './../views/RecruiterView.vue'
 
