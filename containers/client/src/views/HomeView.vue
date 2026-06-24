@@ -9,9 +9,8 @@ const selectRole = (role: 'student' | 'recruiter' | 'sherpa') => {
   if (role === 'student' || role === 'sherpa') {
     // Send both paths to the login, tagging them with a query parameter
     router.push({path: '/login', query: { role } })
-  } else {
-    //Placeholders for the rest of roles
-    alert(`${role} login path is not implemented yet.`)
+  } else if (role === 'recruiter') {
+    router.push({path: '/login/recruiter'})
   }
 }
 </script>

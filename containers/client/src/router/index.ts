@@ -5,6 +5,8 @@ import StudentView from './../views/StudentView.vue'
 import SherpaView from './../views/SherpaView.vue'
 import StudentView from './../views/StudentView.vue'
 import SherpaView from './../views/SherpaView.vue'
+import RecruiterLogin from './../views/RecruiterLogin.vue'
+import RecruiterView from './../views/RecruiterView.vue'
 
 const routes = [
   {
@@ -14,8 +16,13 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'student-login',
+    name: 'auth-getaway',
     component: StudentLogin
+  },
+  {
+    path: '/login/recruiter',
+    name: 'recruiter-getaway',
+    component: RecruiterLogin
   },
   {
     path: '/dashboard/student',
@@ -26,6 +33,11 @@ const routes = [
     path: '/dashboard/sherpa',
     name: 'sherpa-dashboard',
     component: SherpaView
+  },
+  {
+    path: '/dashboard/recruiter',
+    name: 'recruiter-dashboard',
+    component: RecruiterView
   }
 ]
 
